@@ -1,0 +1,39 @@
+diff --git a/node_modules/@ffmpeg/ffmpeg/src/browser/getCreateFFmpegCore.js b/node_modules/@ffmpeg/ffmpeg/src/browser/getCreateFFmpegCore.js
+index ed38e0b..1f051ad 100644
+--- a/node_modules/@ffmpeg/ffmpeg/src/browser/getCreateFFmpegCore.js
++++ b/node_modules/@ffmpeg/ffmpeg/src/browser/getCreateFFmpegCore.js
+@@ -39,12 +39,16 @@ module.exports = async ({ corePath: _corePath }) => {
+       const eventHandler = () => {
+         script.removeEventListener('load', eventHandler);
+         log('info', 'ffmpeg-core.js script loaded');
+-        resolve({
+-          createFFmpegCore,
+-          corePath,
+-          wasmPath,
+-          workerPath,
+-        });
++        try {
++          resolve({
++            createFFmpegCore,
++            corePath,
++            wasmPath,
++            workerPath,
++          });
++        } catch (error) {
++          log('info', 'ffmpeg-core loadFailed');
++        }
+       };
+       script.src = corePath;
+       script.type = 'text/javascript';
+diff --git a/node_modules/@ffmpeg/ffmpeg/src/utils/parseProgress.js b/node_modules/@ffmpeg/ffmpeg/src/utils/parseProgress.js
+index dc1658a..a7536d7 100644
+--- a/node_modules/@ffmpeg/ffmpeg/src/utils/parseProgress.js
++++ b/node_modules/@ffmpeg/ffmpeg/src/utils/parseProgress.js
+@@ -22,6 +22,7 @@ module.exports = (message, progress) => {
+       progress({ ratio, time: t });
+     } else if (message.startsWith('video:')) {
+       progress({ ratio: 1 });
++      ratio = 0;
+       duration = 0;
+     }
+   }
